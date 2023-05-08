@@ -1,4 +1,5 @@
 import os
+import io
 import shutil
 import os.path as path
 from collections import OrderedDict as odict
@@ -20,6 +21,8 @@ from flask import request
 # 解决跨域问题
 from flask_cors import CORS
 
+from urllib.request import urlretrieve
+
 #  创建flask服务对象
 app = Flask(__name__)
 #  动态解决前端跨域问题
@@ -28,7 +31,7 @@ CORS(app, supports_credentials=True)
 raw_img = 'Ours'
 
 paths = odict([
-    ('Ours', './front/public/output/128/sample_testing')
+    ('Ours', 'D:/_Bian_Cheng/_temp/Img/output/128/sample_testing')
 ])
 
 atts = ['Bald', 'Bangs', 'Black_Hair', 'Blond_Hair', 'Brown_Hair',
@@ -55,7 +58,7 @@ crop_dict = {
     'Ours': [(i*128+140, 0, i*128+268, 128) for i in range(1, num_att+1)]
 }
 
-IMG_PATH = "./front/public/output/128/sample_testing"
+IMG_PATH = "D:/_Bian_Cheng/_temp/Img/output/128/sample_testing"
 
 att_dict = {'5_o_Clock_Shadow': 0, 'Arched_Eyebrows': 1, 'Attractive': 2,
                 'Bags_Under_Eyes': 3, 'Bald': 4, 'Bangs': 5, 'Big_Lips': 6,
@@ -74,12 +77,79 @@ att_file = 'D:\_Bian_Cheng\_temp\Img\list_attr_celeba.txt'
 att_cols = [att_dict[i]+1 for i in atts]
 attr = np.loadtxt(att_file, skiprows=2, usecols=att_cols, dtype=str)
 
+Img_200000 = "D:/_Bian_Cheng/_temp/Img/img_align_celeba/200000.jpg"
+
+
+@app.route('/uploadPicture', methods=['POST'])
+def uploadPicture():
+    try:
+        # 批量删除指定名称的图像
+        for file in os.listdir(IMG_PATH):
+            if file.startswith('200000'):  # 删除root路径下 命名以'test'开头的图像
+                os.remove(os.path.join(IMG_PATH, file))
+
+        file = request.files['file']
+        img = Image.open(io.BytesIO(file.read()))
+        img.save(Img_200000)
+        # 对图片进行裁剪
+        img = Image.open(Img_200000)
+        h = img.height
+        w = img.width
+        size = min(h, w) - 5
+        height = (h - size) // 3 + 1
+        width = (w - size) // 2 + 1
+        # height和width表示左上点的坐标，size表示图片边长
+        ts.generate_single(experiment_name="128", img=[200000],
+                           height=height, width=width, size=size)
+        return "success"
+    except:
+        return "failure"
+
+
+@app.route('/getPictureByUrl', methods=['GET'])
+def getPictureByUrl():
+    url = request.args.get("url")
+
+    if request.method == 'GET':
+        if url is None:
+            pass
+        else:
+            try:
+                # 批量删除指定名称的图像
+                for file in os.listdir(IMG_PATH):
+                    if file.startswith('200000'):  # 删除root路径下 命名以'test'开头的图像
+                        os.remove(os.path.join(IMG_PATH, file))
+                urlretrieve(url, Img_200000)
+                # 对图片进行裁剪
+                img = Image.open(Img_200000)
+                h = img.height
+                w = img.width
+                size = min(h, w) - 5
+                height = (h - size) // 3 + 1
+                width = (w - size) // 2 + 1
+                # height和width表示左上点的坐标，size表示图片边长
+                ts.generate_single(experiment_name="128", img=[200000],
+                                   height=height, width=width, size=size)
+                return "success"
+            except:
+                return "failure"
+
+
+@app.route('/getPictureFlag', methods=['GET'])
+def getPictureFlag():
+    pid = request.args.get("pid")
+    attribute = request.args.get("attribute")
+
+    if request.method == 'GET':
+        if pid is None:
+            pass
+        else:
+            return attr[int(pid)-1][site[attribute]]
+
 
 #  指定请求路径、方法
 @app.route('/getPicture', methods=['GET'])
 def getPicture():
-    # request_begin_time = datetime.today()
-    # print("request_begin_time", request_begin_time)
     pid = request.args.get("pid")
     attribute = request.args.get("attribute")
 
@@ -89,58 +159,43 @@ def getPicture():
         else:
             try:  # 尝试打开对应属性的图片
                 single_img = open(IMG_PATH + '/' + pid + '_' + attribute + ".png", "rb").read()
-                # response = make_response(single_img)
-                # response.headers['Content-Type'] = 'image/png'
-                if attribute == 'raw':
-                    return pid + '_' + attribute + ".png"
-                else:
-                    return pid + '_' + attribute + ".png$" + attr[int(pid)-1][site[attribute]]
+                response = make_response(single_img)
+                response.headers['Content-Type'] = 'image/png'
+                return response
             except:  # 该图片的该属性之前未访问过
-                print('Can\'t open %s_%s.png' % (str(pid), attribute))
-                try:  # 尝试打开对应图片
-                    img = Image.open(IMG_PATH + '/' + pid + ".png")
-                    try:  # 裁剪该图片对应的属性
-                        if attribute == 'raw':
-                            save_img = img.crop((0, 0, 128, 128))
-                        else:
-                            i = site[attribute]+1
-                            save_img = img.crop((i*128+140, 0, i*128+268, 128))
-                        save_img.save(IMG_PATH + '/' + pid + '_' + attribute + ".png")
-                        return getPicture()
-                    except:  # 属性不存在
-                        # return 'The attribute of %s is unavailable' % attribute
-                        return "unavailable attribute"
-                except:  # 该图片未生成过
-                    print('Can\'t open %s.png' % (str(pid)))
-                    if int(pid) < 100000 or int(pid) > 200000:
-                        return 'The pid of %s is unavailable' % pid
-                    else:  # 若图片id符合要求，则生成该图片
-                        ts.generate_single(experiment_name="128", img=[int(pid)])
-                        return getPicture()
-
+                if pid == "200000":
+                    return cutPicture(pid, attribute, False)
+                return cutPicture(pid, attribute, True)
     else:
         pass
 
-    # imgs = {}
-    # for cat in paths:
-    #     try:
-    #         wimg = Image.open(path.join(paths[cat], str(pid) + '.png'))
-    #     except:
-    #         try:
-    #             wimg = Image.open(path.join(paths[cat], str(pid) + '.jpg'))
-    #         except:
-    #             print('Can\'t open %s of %s' % (str(pid), cat))
-    #             continue
-    #     if cat == raw_img:
-    #         rimg = wimg.crop((0, 0, 128, 128))
-    #         imgs['raw'] = rimg
-    #     imgs[cat] = [wimg.crop(crop_dict[cat][i]) for i in range(num_att)]
-    #     # if cat == 'StarGAN':
-    #     #     imgs[cat] = [wimg.crop(crop_stargan[i]) for i in range(num_att)]
-    #     # else:
-    #     #     imgs[cat] = [wimg.crop(crop_others[i]) for i in range(num_att)]
-    #     wimg.close()
-    # return imgs
+
+def cutPicture(pid, attribute, isFirst):
+    # print('Can\'t open %s_%s.png' % (str(pid), attribute))
+    try:  # 尝试打开对应图片
+        img = Image.open(IMG_PATH + '/' + pid + ".png")
+        try:  # 裁剪该图片对应的属性
+            if attribute == 'raw':
+                save_img = img.crop((0, 0, 128, 128))
+            else:
+                i = site[attribute] + 1
+                save_img = img.crop((i * 128 + 140, 0, i * 128 + 268, 128))
+            save_img.save(IMG_PATH + '/' + pid + '_' + attribute + ".png")
+            single_img = open(IMG_PATH + '/' + pid + '_' + attribute + ".png", "rb").read()
+            response = make_response(single_img)
+            response.headers['Content-Type'] = 'image/png'
+            return response
+        except:  # 属性不存在
+            return "unavailable attribute"
+    except:  # 该图片未生成过
+        if not isFirst:
+            return "generation failed"
+        print('Can\'t open %s.png' % (str(pid)))
+        if int(pid) < 100000 or int(pid) > 200000:
+            return 'The pid of %s is unavailable' % pid
+        else:  # 若图片id符合要求，则生成该图片
+            ts.generate_single(experiment_name="128", img=[int(pid)])
+            return cutPicture(pid, attribute, False)
 
 
 if __name__== "__main__":

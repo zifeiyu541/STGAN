@@ -1,21 +1,9 @@
-import numpy as np
+from PIL import Image, ImageTk
 
-att_dict = {'5_o_Clock_Shadow': 0, 'Arched_Eyebrows': 1, 'Attractive': 2,
-                'Bags_Under_Eyes': 3, 'Bald': 4, 'Bangs': 5, 'Big_Lips': 6,
-                'Big_Nose': 7, 'Black_Hair': 8, 'Blond_Hair': 9, 'Blurry': 10,
-                'Brown_Hair': 11, 'Bushy_Eyebrows': 12, 'Chubby': 13,
-                'Double_Chin': 14, 'Eyeglasses': 15, 'Goatee': 16,
-                'Gray_Hair': 17, 'Heavy_Makeup': 18, 'High_Cheekbones': 19,
-                'Male': 20, 'Mouth_Slightly_Open': 21, 'Mustache': 22,
-                'Narrow_Eyes': 23, 'No_Beard': 24, 'Oval_Face': 25,
-                'Pale_Skin': 26, 'Pointy_Nose': 27, 'Receding_Hairline': 28,
-                'Rosy_Cheeks': 29, 'Sideburns': 30, 'Smiling': 31,
-                'Straight_Hair': 32, 'Wavy_Hair': 33, 'Wearing_Earrings': 34,
-                'Wearing_Hat': 35, 'Wearing_Lipstick': 36,
-                'Wearing_Necklace': 37, 'Wearing_Necktie': 38, 'Young': 39}
 atts = ['Bald', 'Bangs', 'Black_Hair', 'Blond_Hair', 'Brown_Hair',
         'Bushy_Eyebrows', 'Eyeglasses', 'Male', 'Mouth_Slightly_Open'
         ,'Mustache', 'No_Beard', 'Pale_Skin', 'Young']
+
 site = {'Bald': 0,
         'Bangs': 1,
         'Black_Hair': 2,
@@ -29,12 +17,29 @@ site = {'Bald': 0,
         'No_Beard': 10,
         'Pale_Skin': 11,
         'Young': 12}
-att_file = 'D:\_Bian_Cheng\_temp\Img\list_attr_celeba.txt'
-att_cols = [att_dict[i]+1 for i in atts]
-attr = np.loadtxt(att_file, skiprows=2, usecols=att_cols, dtype=str)
 
-pid = 100000
-attribute = 'Male'
+IMG_PATH = "D:/_Bian_Cheng/_temp/Img/output"
 
-print(attr[int(pid)-1][site[attribute]])
+IMG_ID = "182651"
 
+img = Image.open(IMG_PATH + "/128/sample_testing_slide/" + IMG_ID + ".png")
+# save_img = img.crop((0, 0, 128, 128))
+# save_img.save(IMG_PATH + '/temp/' + IMG_ID + ".png")
+
+for i in range(5):
+    save_img = img.crop((i*128+140, 0, i*128+268, 128))
+    save_img.save(IMG_PATH + '/temp/' + IMG_ID + '_Mustache_' + str(i+1) + ".png")
+    print(i)
+
+
+# for att in atts:
+#     save_img = img.crop((site[att]*128+128+140, 0, site[att]*128+128+268, 128))
+#     save_img.save(IMG_PATH + '/temp/' + IMG_ID + '_' + att + ".png")
+#     print(att)
+
+
+# for i in range(182638, 183638):
+#     img = Image.open(IMG_PATH + '/128/mustache/' + str(i) + "_['Mustache'].png")
+#     save_img = img.crop((140, 0, 268, 128))
+#     save_img.save(IMG_PATH + '/mustache/' + str(i) + "_Mustache.png")
+#     print(str(i))

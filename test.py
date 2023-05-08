@@ -42,7 +42,7 @@ parser.add_argument('--test_att', type=str, default=None)
 parser.add_argument('--test_int_min', type=float, default=-1.0)
 parser.add_argument('--test_int_max', type=float, default=1.0)
 args_ = parser.parse_args()
-with open('./front/public/output/%s/setting.txt' % args_.experiment_name) as f:
+with open('D:/_Bian_Cheng/_temp/Img/output/%s/setting.txt' % args_.experiment_name) as f:
     args = json.load(f)
 
 # model
@@ -132,7 +132,7 @@ else:
 # ==============================================================================
 
 # initialization
-ckpt_dir = './front/public/output/%s/checkpoints' % experiment_name
+ckpt_dir = 'D:/_Bian_Cheng/_temp/Img/output/%s/checkpoints' % experiment_name
 tl.load_checkpoint(ckpt_dir, sess)
 
 # test
@@ -178,7 +178,7 @@ try:
         if test_slide:     save_folder = 'sample_testing_slide'
         elif multi_atts:   save_folder = 'sample_testing_multi'
         else:              save_folder = 'sample_testing'
-        save_dir = './front/public/output/%s/%s' % (experiment_name, save_folder)
+        save_dir = 'D:/_Bian_Cheng/_temp/Img/output/%s/%s' % (experiment_name, save_folder)
         pylib.mkdir(save_dir)
         im.imwrite(sample.squeeze(0), '%s/%06d%s.png' % (save_dir,
                                                          idx + 182638 if img is None else img[idx], 

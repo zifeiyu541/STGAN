@@ -142,7 +142,8 @@ class Celeba(Dataset):
                 'Wearing_Necklace': 37, 'Wearing_Necktie': 38, 'Young': 39}
 
     def __init__(self, data_dir, atts, img_resize, batch_size, prefetch_batch=2, drop_remainder=True,
-                 num_threads=16, shuffle=True, buffer_size=4096, repeat=-1, sess=None, part='train', crop=True, im_no=None):
+                 num_threads=16, shuffle=True, buffer_size=4096, repeat=-1, sess=None, part='train',
+                 crop=True, im_no=None, height=26, width=3, size=170):
         super(Celeba, self).__init__()
 
         list_file = os.path.join(data_dir, 'list_attr_celeba.txt')
@@ -174,7 +175,7 @@ class Celeba(Dataset):
 
         def _map_func(img, label):
             if crop:
-                img = tf.image.crop_to_bounding_box(img, offset_h, offset_w, img_size, img_size)
+                img = tf.image.crop_to_bounding_box(img, height, width, size, size)
             # img = tf.image.resize_images(img, [img_resize, img_resize]) / 127.5 - 1
             # or
             img = tf.image.resize_images(img, [img_resize, img_resize], tf.image.ResizeMethod.BICUBIC)

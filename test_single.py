@@ -23,8 +23,9 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 def generate_single(experiment_name, gpu='all', dataroot='D:\_Bian_Cheng\_temp\Img',
                     img=None, test_atts=None, test_ints=None, test_int=1.0, test_slide=False,
-                    n_slide=10, test_att=None, test_int_min=-1.0, test_int_max=1.0):
-    with open('./front/public/output/%s/setting.txt' % experiment_name) as f:
+                    n_slide=10, test_att=None, test_int_min=-1.0, test_int_max=1.0,
+                    height=26, width=3, size=170):
+    with open('D:/_Bian_Cheng/_temp/Img/output/%s/setting.txt' % experiment_name) as f:
         args = json.load(f)
 
     # model
@@ -74,7 +75,8 @@ def generate_single(experiment_name, gpu='all', dataroot='D:\_Bian_Cheng\_temp\I
 
     # data
     sess = tl.session()
-    te_data = data.Celeba(dataroot, atts, img_size, 1, part='test', sess=sess, crop=not use_cropped_img, im_no=img)
+    te_data = data.Celeba(dataroot, atts, img_size, 1, part='test', sess=sess, crop=not use_cropped_img, im_no=img,
+                          height=height, width=width, size=size)
     # models
     Genc = partial(models.Genc, dim=enc_dim, n_layers=enc_layers, multi_inputs=multi_inputs)
     Gdec = partial(models.Gdec, dim=dec_dim, n_layers=dec_layers, shortcut_layers=shortcut_layers,
@@ -100,7 +102,7 @@ def generate_single(experiment_name, gpu='all', dataroot='D:\_Bian_Cheng\_temp\I
     # ==============================================================================
 
     # initialization
-    ckpt_dir = './front/public/output/%s/checkpoints' % experiment_name
+    ckpt_dir = 'D:/_Bian_Cheng/_temp/Img/output/%s/checkpoints' % experiment_name
     tl.load_checkpoint(ckpt_dir, sess)
 
     # test
@@ -146,7 +148,7 @@ def generate_single(experiment_name, gpu='all', dataroot='D:\_Bian_Cheng\_temp\I
             if test_slide:     save_folder = 'sample_testing_slide'
             elif multi_atts:   save_folder = 'sample_testing_multi'
             else:              save_folder = 'sample_testing'
-            save_dir = './front/public/output/%s/%s' % (experiment_name, save_folder)
+            save_dir = 'D:/_Bian_Cheng/_temp/Img/output/%s/%s' % (experiment_name, save_folder)
             pylib.mkdir(save_dir)
             im.imwrite(sample.squeeze(0), '%s/%06d%s.png' % (save_dir,
                                                              idx + 182638 if img is None else img[idx],

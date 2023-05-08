@@ -140,8 +140,8 @@ experiment_name = args.experiment_name
 num_ckpt = args.num_ckpt
 clear = args.clear
 
-pylib.mkdir('./front/public/output/%s' % experiment_name)
-with open('./front/public/output/%s/setting.txt' % experiment_name, 'w') as f:
+pylib.mkdir('D:/_Bian_Cheng/_temp/Img/output/%s' % experiment_name)
+with open('D:/_Bian_Cheng/_temp/Img/output/%s/setting.txt' % experiment_name, 'w') as f:
     f.write(json.dumps(vars(args), indent=4, separators=(',', ':')))
 
 # ==============================================================================
@@ -295,10 +295,10 @@ it_cnt, update_cnt = tl.counter()
 saver = tf.train.Saver(max_to_keep=num_ckpt)
 
 # summary writer
-summary_writer = tf.summary.FileWriter('./front/public/output/%s/summaries' % experiment_name, sess.graph)
+summary_writer = tf.summary.FileWriter('D:/_Bian_Cheng/_temp/Img/output/%s/summaries' % experiment_name, sess.graph)
 
 # initialization
-ckpt_dir = './front/public/output/%s/checkpoints' % experiment_name
+ckpt_dir = 'D:/_Bian_Cheng/_temp/Img/output/%s/checkpoints' % experiment_name
 pylib.mkdir(ckpt_dir)
 
 try:
@@ -371,7 +371,7 @@ try:
                             last_images[nnn, 3:4, 1:6, :] = -1.
                 sample = np.concatenate(x_sample_opt_list, 2)
 
-                save_dir = './front/public/output/%s/sample_training' % experiment_name
+                save_dir = 'D:/_Bian_Cheng/_temp/Img/output/%s/sample_training' % experiment_name
                 pylib.mkdir(save_dir)
                 im.imwrite(im.immerge(sample, n_sample, 1), '%s/Epoch_(%d)_(%dof%d).jpg' % \
                                                             (save_dir, epoch, it_in_epoch, it_per_epoch))

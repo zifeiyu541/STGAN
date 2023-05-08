@@ -27,11 +27,11 @@ att_dict = {'5_o_Clock_Shadow': 0, 'Arched_Eyebrows': 1, 'Attractive': 2,
                 'Wearing_Necklace': 37, 'Wearing_Necktie': 38, 'Young': 39}
 
 paths = odict([
-    ('Ours', './front/public/output/128/sample_testing')
+    ('Ours', 'D:/_Bian_Cheng/_temp/Img/output/128/sample_testing')
 ])
 
 rec_paths = odict([
-    ('Ours', './front/public/output/128/sample_testing')
+    ('Ours', 'D:/_Bian_Cheng/_temp/Img/output/128/sample_testing')
 ])
 
 cat_dict = {
